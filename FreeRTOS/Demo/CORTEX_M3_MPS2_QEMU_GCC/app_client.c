@@ -1,43 +1,109 @@
 #include "app_common.h"
+#include "FreeRTOS_IP.h"
 #include "FreeRTOS_Sockets.h"
 
+/* definitions */
+#define BUF_SIZE 10
 /* functions */
-static void vCreateTCPClientSocket(void);
+void vTCPSend(char *pcBufferToTransmit, const size_t xTotalLengthToSend);
 
+/* vaiables */
+static const char *msg = "aiueo";
+static uint8_t buf[BUF_SIZE];
 TaskHandle_t client_handle;
+
+static inline int snlen(const char *s, int maxlen)
+{
+    int i = 0;
+    while (i < maxlen && *s++)
+        i++;
+    return i;
+}
+
+/* functions */
 void client_task(void *param)
 {
     (void)param;
+    size_t len;
     d("");
-    vCreateTCPClientSocket();
+
+    len = snlen(msg, BUF_SIZE - 1);
+    memcpy(buf, msg, len + 1);
+    vTCPSend((char*)buf, len);
     for (;;)
         ;
 }
 
-static void vCreateTCPClientSocket(void)
+void vTCPSend(char *pcBufferToTransmit, const size_t xTotalLengthToSend)
 {
-    Socket_t xClientSocket;
-    socklen_t xSize = sizeof(struct freertos_sockaddr);
-    static const TickType_t xTimeOut = pdMS_TO_TICKS(2000);
+    Socket_t xSocket;
+    struct freertos_sockaddr xRemoteAddress;
+    BaseType_t xAlreadyTransmitted = 0, xBytesSent = 0;
+    size_t xLenToSend;
 
-    xClientSocket = FreeRTOS_socket(FREERTOS_AF_INET,
-                                    FREERTOS_SOCK_STREAM,
-                                    FREERTOS_IPPROTO_TCP);
-    d("sock:%ld", (int32_t)xClientSocket);
-    configASSERT(xClientSocket != FREERTOS_INVALID_SOCKET);
+    d("IN");
+    /* Set the IP address (192.168.0.200) and port (1500) of the remote socket
+    to which this client socket will transmit. */
+    xRemoteAddress.sin_port = FreeRTOS_htons(1500);
+    xRemoteAddress.sin_addr = FreeRTOS_inet_addr_quick(192, 168, 0, 200);
 
-    FreeRTOS_setsockopt(xClientSocket,
-                        0,
-                        FREERTOS_SO_RCVTIMEO, &xTimeOut,
-                        sizeof(xTimeOut));
+    /* Create a socket. */
+    xSocket = FreeRTOS_socket(FREERTOS_AF_INET,
+                              FREERTOS_SOCK_STREAM, /* FREERTOS_SOCK_STREAM for TCP. */
+                              FREERTOS_IPPROTO_TCP);
+    configASSERT(xSocket != FREERTOS_INVALID_SOCKET);
 
-    FreeRTOS_setsockopt(xClientSocket,
-                        0,
-                        FREERTOS_SO_SNDTIMEO,
-                        &xTimeOut,
-                        sizeof(xTimeOut));
-    d("sockopt");
+    if (FreeRTOS_connect(xSocket, &xRemoteAddress, sizeof(xRemoteAddress)) == 0)
+    {
+        d("connected");
+        /* Keep sending until the entire buffer has been sent. */
+        while ((size_t)xAlreadyTransmitted < xTotalLengthToSend)
+        {
+            /* How many bytes are left to send? */
+            xLenToSend = xTotalLengthToSend - xAlreadyTransmitted;
+            xBytesSent = FreeRTOS_send(/* The socket being sent to. */
+                                       xSocket,
+                                       /* The data being sent. */
+                                       &(pcBufferToTransmit[xAlreadyTransmitted]),
+                                       /* The remaining length of data to send. */
+                                       xLenToSend,
+                                       /* ulFlags. */
+                                       0);
 
-    FreeRTOS_bind(xClientSocket, NULL, xSize);
-    d("bind");
+            if (xBytesSent >= 0)
+            {
+                /* Data was sent successfully. */
+                xAlreadyTransmitted += xBytesSent;
+            }
+            else
+            {
+                /* Error - break out of the loop for graceful socket close. */
+                break;
+            }
+        }
+    }
+    else
+    {
+        d("not connected");
+    }
+
+    /* Initiate graceful shutdown. */
+    FreeRTOS_shutdown(xSocket, FREERTOS_SHUT_RDWR);
+
+    /* Wait for the socket to disconnect gracefully (indicated by FreeRTOS_recv()
+       returning a -pdFREERTOS_ERRNO_EINVAL error) before closing the socket. */
+    while (FreeRTOS_recv(xSocket, pcBufferToTransmit, xTotalLengthToSend, 0) >= 0)
+    {
+        /* Wait for shutdown to complete.  If a receive block time is used then
+           this delay will not be necessary as FreeRTOS_recv() will place the RTOS task
+           into the Blocked state anyway. */
+        vTaskDelay(pdTICKS_TO_MS(250));
+
+        /* Note - real applications should implement a timeout here, not just
+        loop forever. */
+    }
+
+    /* The socket has shut down and is safe to close. */
+    FreeRTOS_closesocket(xSocket);
+    d("OUT");
 }
