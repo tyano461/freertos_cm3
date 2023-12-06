@@ -59,9 +59,9 @@ ifeq ($(FULL_DEMO), 1)
 
     CFLAGS := -DmainCREATE_FULL_DEMO_ONLY=1
 else
-    SOURCE_FILES += main_blinky.c
+#    SOURCE_FILES += main_blinky.c
 
-    CFLAGS := -DmainCREATE_SIMPLE_BLINKY_DEMO_ONLY=1
+#    CFLAGS := -DmainCREATE_SIMPLE_BLINKY_DEMO_ONLY=1
 endif
 
 
@@ -90,7 +90,9 @@ SOURCE_FILES += $(TCP_DIR)/source/portable/BufferManagement/BufferAllocation_2.c
 SOURCE_FILES += $(TCP_DIR)/source/portable/NetworkInterface/board_family/NetworkInterface.c
 
 ### TCP/IP APP
-#SOURCE_FILES += app_tcp.c
+SOURCE_FILES += main_tcp.c
+SOURCE_FILES += app_client.c
+SOURCE_FILES += app_server.c
 
 OBJ_FILES := $(SOURCE_FILES:%.c=$(BUILD_DIR)/%.o)
 

@@ -32,6 +32,7 @@
 #include <string.h>
 #include <stdarg.h>
 #include <stdio.h>
+#include "app_common.h"
 
 void vApplicationStackOverflowHook( TaskHandle_t pxTask,
                                     char * pcTaskName );
@@ -65,7 +66,7 @@ int main()
         }
     #else
         {
-            #error "Invalid Selection...\nPlease Select a Demo application from the main command"
+            main_tcp();
         }
     #endif /* if ( mainCREATE_SIMPLE_BLINKY_DEMO_ONLY == 1 ) */
     return 0;
