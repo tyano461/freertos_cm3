@@ -1,0 +1,11 @@
+{
+    "files.associations": {
+        "app_common.h": "c",
+        "task.h": "c",
+        "freertos.h": "c",
+        "stdint.h": "c",
+        "dlog.h": "c",
+        "freertos_ip.h": "c",
+        "freertos_sockets.h": "c"
+    }
+}

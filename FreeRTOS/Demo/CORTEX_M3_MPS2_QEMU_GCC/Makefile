@@ -87,7 +87,7 @@ INCLUDE_DIRS += -I$(TCP_DIR)/source/include
 INCLUDE_DIRS += -I$(TCP_DIR)/source/portable/Compiler/GCC
 SOURCE_FILES += $(wildcard $(TCP_DIR)/source/*.c)
 SOURCE_FILES += $(TCP_DIR)/source/portable/BufferManagement/BufferAllocation_2.c
-SOURCE_FILES += $(TCP_DIR)/source/portable/NetworkInterface/board_family/NetworkInterface.c
+SOURCE_FILES += $(TCP_DIR)/source/portable/NetworkInterface/virtether/NetworkInterface.c
 
 ### TCP/IP APP
 SOURCE_FILES += main_tcp.c

@@ -13,7 +13,9 @@
                 "${workspaceRoot}/../../../FreeRTOS/Demo/CORTEX_M3_MPS2_QEMU_GCC",
                 "${workspaceRoot}/../../../FreeRTOS/Demo/CORTEX_M3_MPS2_QEMU_GCC/CMSIS",
                 "${workspaceRoot}/../../../FreeRTOS/Source/include",
-                "${workspaceRoot}/../../../FreeRTOS/Source/portable/GCC/ARM_CM3"
+                "${workspaceRoot}/../../../FreeRTOS/Source/portable/GCC/ARM_CM3",
+                "${workspaceRoot}/../../../FreeRTOS-Plus/Source/FreeRTOS-Plus-TCP/source/include",
+                "${workspaceRoot}/../../../FreeRTOS-Plus/Source/FreeRTOS-Plus-TCP/source/portable/Compiler/GCC"
             ],
             "defines": [
                 "DEBUG=1",
