@@ -6,6 +6,7 @@
         "stdint.h": "c",
         "dlog.h": "c",
         "freertos_ip.h": "c",
-        "freertos_sockets.h": "c"
+        "freertos_sockets.h": "c",
+        "freertos_routing.h": "c"
     }
 }

@@ -110,3 +110,10 @@ uint32_t ulApplicationGetNextSequenceNumber(uint32_t ulSourceAddress,
     xApplicationGetRandomNumber(&pulNumber);
     return pulNumber;
 }
+
+struct xNetworkInterface *pxFillInterfaceDescriptor(BaseType_t xEMACIndex,
+                                                    struct xNetworkInterface *pxInterface)
+{
+    d("mac:%lx", (uint32_t)xEMACIndex);
+    return pxInterface;
+}

@@ -55,6 +55,8 @@
 #include "NetworkBufferManagement.h"
 #include "FreeRTOS_DNS.h"
 
+#include "dlog.h"
+
 /* IPv4 multi-cast addresses range from 224.0.0.0.0 to 240.0.0.0. */
 #define ipFIRST_MULTI_CAST_IPv4             0xE0000000U /**< Lower bound of the IPv4 multicast address. */
 #define ipLAST_MULTI_CAST_IPv4              0xF0000000U /**< Higher bound of the IPv4 multicast address. */
@@ -746,6 +748,7 @@ BaseType_t FreeRTOS_IPInit( const uint8_t ucIPAddress[ ipIP_ADDRESS_LENGTH_BYTES
 
     if( xNetworkEventQueue != NULL )
     {
+d("");
         #if ( configQUEUE_REGISTRY_SIZE > 0 )
             {
                 /* A queue registry is normally used to assist a kernel aware
@@ -757,6 +760,7 @@ BaseType_t FreeRTOS_IPInit( const uint8_t ucIPAddress[ ipIP_ADDRESS_LENGTH_BYTES
 
         if( xNetworkBuffersInitialise() == pdPASS )
         {
+d("");
             /* Store the local IP and MAC address. */
             xNetworkAddressing.ulDefaultIPAddress = FreeRTOS_inet_addr_quick( ucIPAddress[ 0 ], ucIPAddress[ 1 ], ucIPAddress[ 2 ], ucIPAddress[ 3 ] );
             xNetworkAddressing.ulNetMask = FreeRTOS_inet_addr_quick( ucNetMask[ 0 ], ucNetMask[ 1 ], ucNetMask[ 2 ], ucNetMask[ 3 ] );
@@ -820,9 +824,11 @@ BaseType_t FreeRTOS_IPInit( const uint8_t ucIPAddress[ ipIP_ADDRESS_LENGTH_BYTES
                                            &( xIPTaskHandle ) );
                 }
             #endif /* configSUPPORT_STATIC_ALLOCATION */
+d("r:%ld", (int32_t)xReturn);
         }
         else
         {
+d("");
             FreeRTOS_debug_printf( ( "FreeRTOS_IPInit: xNetworkBuffersInitialise() failed\n" ) );
 
             /* Clean up. */
@@ -832,6 +838,8 @@ BaseType_t FreeRTOS_IPInit( const uint8_t ucIPAddress[ ipIP_ADDRESS_LENGTH_BYTES
     }
     else
     {
+d("");
+            FreeRTOS_debug_printf( ( "FreeRTOS_IPInit: xNetworkBuffersInitialise() failed\n" ) );
         FreeRTOS_debug_printf( ( "FreeRTOS_IPInit: Network event queue could not be created\n" ) );
     }
 
@@ -1106,6 +1114,7 @@ BaseType_t xSendEventStructToIPTask( const IPStackEvent_t * pxEvent,
 
     if( ( xIPIsNetworkTaskReady() == pdFALSE ) && ( pxEvent->eEventType != eNetworkDownEvent ) )
     {
+d("not ready or net down");
         /* Only allow eNetworkDownEvent events if the IP task is not ready
          * yet.  Not going to attempt to send the message so the send failed. */
         xReturn = pdFAIL;
@@ -1118,6 +1127,7 @@ BaseType_t xSendEventStructToIPTask( const IPStackEvent_t * pxEvent,
             {
                 if( pxEvent->eEventType == eTCPTimerEvent )
                 {
+d("timer event");
                     /* TCP timer events are sent to wake the timer task when
                      * xTCPTimer has expired, but there is no point sending them if the
                      * IP task is already awake processing other message. */
@@ -1125,6 +1135,7 @@ BaseType_t xSendEventStructToIPTask( const IPStackEvent_t * pxEvent,
 
                     if( uxQueueMessagesWaiting( xNetworkEventQueue ) != 0U )
                     {
+d("");
                         /* Not actually going to send the message but this is not a
                          * failure as the message didn't need to be sent. */
                         xSendMessage = pdFALSE;
@@ -1135,10 +1146,12 @@ BaseType_t xSendEventStructToIPTask( const IPStackEvent_t * pxEvent,
 
         if( xSendMessage != pdFALSE )
         {
+d("");
             /* The IP task cannot block itself while waiting for itself to
              * respond. */
             if( ( xIsCallingFromIPTask() == pdTRUE ) && ( uxUseTimeout > ( TickType_t ) 0U ) )
             {
+d("");
                 uxUseTimeout = ( TickType_t ) 0;
             }
 
@@ -1146,6 +1159,7 @@ BaseType_t xSendEventStructToIPTask( const IPStackEvent_t * pxEvent,
 
             if( xReturn == pdFAIL )
             {
+d("");
                 /* A message should have been sent to the IP task, but wasn't. */
                 FreeRTOS_debug_printf( ( "xSendEventStructToIPTask: CAN NOT ADD %d\n", pxEvent->eEventType ) );
                 iptraceSTACK_TX_EVENT_LOST( pxEvent->eEventType );
@@ -1153,6 +1167,7 @@ BaseType_t xSendEventStructToIPTask( const IPStackEvent_t * pxEvent,
         }
         else
         {
+d("");
             /* It was not necessary to send the message to process the event so
              * even though the message was not sent the call was successful. */
             xReturn = pdPASS;

@@ -74,15 +74,15 @@ CFLAGS += -nostartfiles -mthumb -mcpu=cortex-m3 -Wno-error=implicit-function-dec
 CFLAGS += -Wno-builtin-declaration-mismatch -Werror
 CFLAGS += -Wall -Wextra
 
-ifeq ($(DEBUG), 1)
+#ifeq ($(DEBUG), 1)
     CFLAGS += -ggdb3 -Og
-else
-    CFLAGS += -O3
-endif
+#else
+#    CFLAGS += -O3
+#endif
     CFLAGS += -fstrict-aliasing -Wstrict-aliasing -Wno-error=address-of-packed-member
 
 ### TCP/IP
-TCP_DIR := $(abspath ../../../FreeRTOS-Plus/Source/FreeRTOS-Plus-TCP/)
+TCP_DIR := $(abspath ../../../../FreeRTOS-Plus-TCP/)
 INCLUDE_DIRS += -I$(TCP_DIR)/source/include
 INCLUDE_DIRS += -I$(TCP_DIR)/source/portable/Compiler/GCC
 SOURCE_FILES += $(wildcard $(TCP_DIR)/source/*.c)
@@ -95,6 +95,7 @@ SOURCE_FILES += app_client.c
 SOURCE_FILES += app_server.c
 
 OBJ_FILES := $(SOURCE_FILES:%.c=$(BUILD_DIR)/%.o)
+$(warning "obj:$(OBJ_FILES)")
 
 CPPFLAGS += $(DEFINES)
 CFLAGS += $(INCLUDE_DIRS)

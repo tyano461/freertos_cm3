@@ -29,7 +29,7 @@ void client_task(void *param)
 
     len = snlen(msg, BUF_SIZE - 1);
     memcpy(buf, msg, len + 1);
-    vTCPSend((char*)buf, len);
+    vTCPSend((char *)buf, len);
     for (;;)
         ;
 }
@@ -42,24 +42,21 @@ void vTCPSend(char *pcBufferToTransmit, const size_t xTotalLengthToSend)
     size_t xLenToSend;
 
     d("IN");
-    /* Set the IP address (192.168.0.200) and port (1500) of the remote socket
-    to which this client socket will transmit. */
-    xRemoteAddress.sin_port = FreeRTOS_htons(1500);
-    xRemoteAddress.sin_addr = FreeRTOS_inet_addr_quick(192, 168, 0, 200);
+    xRemoteAddress.sin_port = FreeRTOS_htons(10000);
+    xRemoteAddress.sin_addr = FreeRTOS_inet_addr_quick(127, 0, 0, 1);
 
     /* Create a socket. */
     xSocket = FreeRTOS_socket(FREERTOS_AF_INET,
-                              FREERTOS_SOCK_STREAM, /* FREERTOS_SOCK_STREAM for TCP. */
+                              FREERTOS_SOCK_STREAM,
                               FREERTOS_IPPROTO_TCP);
     configASSERT(xSocket != FREERTOS_INVALID_SOCKET);
 
+    d("socket");
     if (FreeRTOS_connect(xSocket, &xRemoteAddress, sizeof(xRemoteAddress)) == 0)
     {
         d("connected");
-        /* Keep sending until the entire buffer has been sent. */
         while ((size_t)xAlreadyTransmitted < xTotalLengthToSend)
         {
-            /* How many bytes are left to send? */
             xLenToSend = xTotalLengthToSend - xAlreadyTransmitted;
             xBytesSent = FreeRTOS_send(/* The socket being sent to. */
                                        xSocket,

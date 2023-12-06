@@ -50,6 +50,7 @@
 #include "FreeRTOS_DNS.h"
 #include "NetworkBufferManagement.h"
 
+#include "dlog.h"
 /* The ItemValue of the sockets xBoundSocketListItem member holds the socket's
  * port number. */
 /** @brief Set the port number for the socket in the xBoundSocketListItem. */
@@ -3001,7 +3002,7 @@ void vSocketWakeUpUser( FreeRTOS_Socket_t * pxSocket )
                                           struct freertos_sockaddr const * pxAddress )
     {
         BaseType_t xResult = 0;
-
+d("");
         if( pxAddress == NULL )
         {
             /* NULL address passed to the function. Invalid value. */
@@ -3096,7 +3097,7 @@ void vSocketWakeUpUser( FreeRTOS_Socket_t * pxSocket )
         ( void ) xAddressLength;
 
         xResult = prvTCPConnectStart( pxSocket, pxAddress );
-
+d("prvTCPConnectStart:%ld", (int32_t)xResult);
         if( xResult == 0 )
         {
             /* And wait for the result */
