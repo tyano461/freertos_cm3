@@ -60,12 +60,15 @@ BaseType_t xNetworkInterfaceInitialise( void )
 BaseType_t xNetworkInterfaceOutput( NetworkBufferDescriptor_t * const pxNetworkBuffer,
                                     BaseType_t xReleaseAfterSend )
 {
+    (void)pxNetworkBuffer;
+    (void)xReleaseAfterSend;
     /* FIX ME. */
     return pdFALSE;
 }
 
 void vNetworkInterfaceAllocateRAMToBuffers( NetworkBufferDescriptor_t pxNetworkBuffers[ ipconfigNUM_NETWORK_BUFFER_DESCRIPTORS ] )
 {
+    (void)pxNetworkBuffers;
     /* FIX ME. */
 }
 
@@ -73,4 +76,22 @@ BaseType_t xGetPhyLinkStatus( void )
 {
     /* FIX ME. */
     return pdFALSE;
+}
+
+BaseType_t xApplicationGetRandomNumber( uint32_t * pulNumber ) {
+    return *pulNumber + 1;
+}
+uint32_t ulApplicationGetNextSequenceNumber( uint32_t ulSourceAddress,
+                                             uint16_t usSourcePort,
+                                             uint32_t ulDestinationAddress,
+                                             uint16_t usDestinationPort )
+{
+    (void)ulSourceAddress;
+    (void)usSourcePort;
+    (void)ulDestinationAddress;
+    (void)usDestinationPort;
+    uint32_t pulNumber = 0;
+
+    xApplicationGetRandomNumber( &pulNumber );
+    return pulNumber;
 }

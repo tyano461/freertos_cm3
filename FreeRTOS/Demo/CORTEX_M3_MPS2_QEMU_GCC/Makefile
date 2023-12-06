@@ -64,6 +64,7 @@ else
     CFLAGS := -DmainCREATE_SIMPLE_BLINKY_DEMO_ONLY=1
 endif
 
+
 DEFINES :=  -DQEMU_SOC_MPS2 -DHEAP3
 
 LDFLAGS = -T ./scripts/mps2_m3.ld -specs=nano.specs --specs=rdimon.specs -lc -lrdimon
@@ -79,6 +80,17 @@ else
     CFLAGS += -O3
 endif
     CFLAGS += -fstrict-aliasing -Wstrict-aliasing -Wno-error=address-of-packed-member
+
+### TCP/IP
+TCP_DIR := $(abspath ../../../FreeRTOS-Plus/Source/FreeRTOS-Plus-TCP/)
+INCLUDE_DIRS += -I$(TCP_DIR)/source/include
+INCLUDE_DIRS += -I$(TCP_DIR)/source/portable/Compiler/GCC
+SOURCE_FILES += $(wildcard $(TCP_DIR)/source/*.c)
+SOURCE_FILES += $(TCP_DIR)/source/portable/BufferManagement/BufferAllocation_2.c
+SOURCE_FILES += $(TCP_DIR)/source/portable/NetworkInterface/board_family/NetworkInterface.c
+
+### TCP/IP APP
+#SOURCE_FILES += app_tcp.c
 
 OBJ_FILES := $(SOURCE_FILES:%.c=$(BUILD_DIR)/%.o)
 
