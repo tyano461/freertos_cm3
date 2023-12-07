@@ -43,10 +43,10 @@ void vTCPSend(char *pcBufferToTransmit, const size_t xTotalLengthToSend)
 
     d("IN");
     xRemoteAddress.sin_port = FreeRTOS_htons(10000);
-    xRemoteAddress.sin_addr = FreeRTOS_inet_addr_quick(127, 0, 0, 1);
+    xRemoteAddress.sin_addr = FreeRTOS_inet_addr_quick(10, 10, 10, 200);
 
     /* Create a socket. */
-    xSocket = FreeRTOS_socket(FREERTOS_AF_INET,
+    xSocket = FreeRTOS_socket(FREERTOS_AF_INET4,
                               FREERTOS_SOCK_STREAM,
                               FREERTOS_IPPROTO_TCP);
     configASSERT(xSocket != FREERTOS_INVALID_SOCKET);

@@ -2,6 +2,9 @@
 #include "FreeRTOS_IP.h"
 #include "FreeRTOS_Sockets.h"
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-function"
+
 static void vCreateTCPServerSocket(void);
 
 TaskHandle_t server_handle;
@@ -47,8 +50,9 @@ static void vCreateTCPServerSocket(void)
     for (;;)
     {
         xConnectedSocket = FreeRTOS_accept(xListeningSocket, &xClient, &xSize);
+        d("accept");
         configASSERT(xConnectedSocket != FREERTOS_INVALID_SOCKET);
 
-        d("accept");
     }
 }
+#pragma GCC diagnostic pop

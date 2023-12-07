@@ -6,4 +6,7 @@
 #define ipconfigUSE_TCP     1
 #define ipconfigIPv4_BACKWARD_COMPATIBLE 1
 #define ipconfigUSE_DHCP_HOOK 0
+
+#define ipconfigUSE_DHCP 0
+#define ipconfigUSE_NETWORK_EVENT_HOOK 1
 #endif

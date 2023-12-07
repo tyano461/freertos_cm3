@@ -12,6 +12,6 @@
     do                                                                                                                                                            \
     {                                                                                                                                                             \
         TaskHandle_t me = xTaskGetCurrentTaskHandle();                                                                                                            \
-        printf("[%x] %s(%d) %s " s " fr:%p \n", (uint16_t)((uint32_t)me & 0xffff), __FILENAME__, __LINE__, __func__, ##__VA_ARGS__, __builtin_return_address(0)); \
+        printf("[%04x] %s(%d) %s " s " fr:%p \n", (uint16_t)((uint32_t)me & 0xffff), __FILENAME__, __LINE__, __func__, ##__VA_ARGS__, __builtin_return_address(0)); \
     } while (0)
 #endif
