@@ -7,6 +7,7 @@
         "dlog.h": "c",
         "freertos_ip.h": "c",
         "freertos_sockets.h": "c",
-        "freertos_routing.h": "c"
+        "freertos_routing.h": "c",
+        "pack_struct_start.h": "c"
     }
 }
