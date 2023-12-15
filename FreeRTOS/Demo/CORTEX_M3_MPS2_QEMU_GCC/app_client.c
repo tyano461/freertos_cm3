@@ -20,11 +20,24 @@ static inline int snlen(const char *s, int maxlen)
     return i;
 }
 
+void sample_data_send(const uint8_t *data, size_t size)
+{
+#define WRITE_MMIO_REG 0x28000000
+#define WRITE_DATA_BASE (uint8_t*)0x28000010
+#define write_set(s) *(uint32_t*)WRITE_MMIO_REG = s
+#define write_on(s) write_set(1)
+#define write_off(s) write_set(0)
+
+    write_on();
+    memcpy(WRITE_DATA_BASE, data, size);
+    write_off();
+}
 /* functions */
 void client_task(void *param)
 {
     (void)param;
     size_t len;
+    sample_data_send((const uint8_t*)"aiueo", 5);
     d("");
 
     len = snlen(msg, BUF_SIZE - 1);
