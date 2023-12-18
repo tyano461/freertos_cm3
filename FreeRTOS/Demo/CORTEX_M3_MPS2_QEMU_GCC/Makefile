@@ -64,6 +64,7 @@ else
 #    CFLAGS := -DmainCREATE_SIMPLE_BLINKY_DEMO_ONLY=1
 endif
 
+GIT_VER = $(shell git log -1 --format="%H")
 
 DEFINES :=  -DQEMU_SOC_MPS2 -DHEAP3
 
@@ -73,6 +74,7 @@ LDFLAGS += -Xlinker -Map=${BUILD_DIR}/output.map
 CFLAGS += -nostartfiles -mthumb -mcpu=cortex-m3 -Wno-error=implicit-function-declaration
 CFLAGS += -Wno-builtin-declaration-mismatch -Werror
 CFLAGS += -Wall -Wextra
+CFLAGS += -DGITVER=\"$(GIT_VER)\"
 
 #ifeq ($(DEBUG), 1)
     CFLAGS += -ggdb3 -Og
@@ -104,7 +106,9 @@ CFLAGS += $(INCLUDE_DIRS)
 .PHONY: clean
 
 $(BUILD_DIR)/$(BIN) : $(OBJ_FILES)
+	md5sum build/home/voyager/workspace/freertos/FreeRTOS-Plus-TCP/source/portable/NetworkInterface/virtether/NetworkInterface.o
 	$(CC) -ffunction-sections -fdata-sections $(CFLAGS) $(LDFLAGS) $+ -o $(@)
+	md5sum $@
 
 %.d: %.c
 	@set -e; rm -f $@; \
@@ -118,6 +122,7 @@ INCLUDES := $(SOURCE_FILES:%.c=$(BUILD_DIR)/%.d)
 ${BUILD_DIR}/%.o : %.c Makefile
 	-mkdir -p $(@D)
 	$(CC) $(CFLAGS) $(CPPFLAGS) -MMD -c $< -o $@
+	md5sum $@
 
 clean:
 	-rm -rf build

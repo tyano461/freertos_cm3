@@ -19,7 +19,7 @@ static const uint8_t ucDNSServerAddress[ 4 ] = { 208, 67, 222, 222 };
 
 void main_tcp(void)
 {
-
+    d("%s, %s(%s)", __TIME__, __DATE__, GITVER);
         FreeRTOS_IPInit( ucIPAddress,
                      ucNetMask,
                      ucGatewayAddress,
