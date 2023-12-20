@@ -167,6 +167,8 @@ void Default_Handler6( void )
     }
 }
 
+extern void ether_rx_handler(void);
+
 const uint32_t * isr_vector[] __attribute__( ( section( ".isr_vector" ) ) ) =
 {
     ( uint32_t * ) &_estack,
@@ -198,12 +200,13 @@ const uint32_t * isr_vector[] __attribute__( ( section( ".isr_vector" ) ) ) =
     0,                                   /* Dial Timer */
     0,                                   /* SPI0 SPI1 */
     0,                                   /* uart overflow 1, 2,3 */
-    0,                                   /* Ethernet   13 */
+    (uint32_t*) &ether_rx_handler,       /* Ethernet   13 */
 };
 
 void _start( void )
 {
     uart_init();
+    NVIC_EnableIRQ(ETHERNET_IRQn);
     main( 0, 0 );
     exit( 0 );
 }

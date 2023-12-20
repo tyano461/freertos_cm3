@@ -1,0 +1,11 @@
+set pagination off
+file /home/voyager/workspace/oss/build_qemu/qemu-system-arm
+#b main
+#b nvic_sysreg_write
+#b armv7m_nvic_instance_init
+#b send_to_freertos
+#b mps2_common_init
+b do_armv7m_nvic_set_pending
+b armv7m_nvic_set_pending_lazyfp
+b armv7m_nvic_complete_irq
+r -machine mps2-an385 -m 16 -monitor null -semihosting --semihosting-config enable=on,target=native -kernel ./build/RTOSDemo.axf -serial stdio -nographic
