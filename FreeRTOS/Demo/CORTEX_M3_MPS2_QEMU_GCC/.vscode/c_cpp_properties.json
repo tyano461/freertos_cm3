@@ -19,6 +19,7 @@
             ],
             "defines": [
                 "DEBUG=1",
+                "GITVER=\"gitver\"",
                 "mainCREATE_SIMPLE_BLINKY_DEMO_ONLY=1"
             ],
             "intelliSenseMode": "clang-x64",
@@ -37,7 +38,7 @@
                 "/System/Library/Frameworks",
                 "/Library/Frameworks"
             ],
-            "compilerPath": "/usr/local/bin/arm-none-eabi-gcc",
+            "compilerPath": "/usr/bin/arm-none-eabi-gcc",
             "cStandard": "c99",
             "cppStandard": "c++11"
         }

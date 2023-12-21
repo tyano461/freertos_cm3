@@ -29,9 +29,9 @@ void client_task(void *param)
 
     len = snlen(msg, BUF_SIZE - 1);
     memcpy(buf, msg, len + 1);
-    vTCPSend((char *)buf, len);
+    // vTCPSend((char *)buf, len);
     for (;;)
-        ;
+        vTaskDelay(100);
 }
 
 void vTCPSend(char *pcBufferToTransmit, const size_t xTotalLengthToSend)
@@ -43,7 +43,7 @@ void vTCPSend(char *pcBufferToTransmit, const size_t xTotalLengthToSend)
 
     d("IN");
     xRemoteAddress.sin_port = FreeRTOS_htons(10000);
-    xRemoteAddress.sin_addr = FreeRTOS_inet_addr_quick(10, 10, 10, 201);
+    xRemoteAddress.sin_addr = FreeRTOS_inet_addr_quick(192, 168, 100, 1);
 
     /* Create a socket. */
     xSocket = FreeRTOS_socket(FREERTOS_AF_INET4,

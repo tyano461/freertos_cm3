@@ -38,6 +38,7 @@ static void vCreateTCPServerSocket(void)
                         &xReceiveTimeOut,
                         sizeof(xReceiveTimeOut));
 
+    memset((void *)&xBindAddress, 0, sizeof(xBindAddress));
     xBindAddress.sin_port = (uint16_t)10000;
     xBindAddress.sin_port = FreeRTOS_htons(xBindAddress.sin_port);
 
@@ -52,7 +53,6 @@ static void vCreateTCPServerSocket(void)
         xConnectedSocket = FreeRTOS_accept(xListeningSocket, &xClient, &xSize);
         d("accept");
         configASSERT(xConnectedSocket != FREERTOS_INVALID_SOCKET);
-
     }
 }
 #pragma GCC diagnostic pop
