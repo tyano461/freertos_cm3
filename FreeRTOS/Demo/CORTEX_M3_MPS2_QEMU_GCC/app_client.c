@@ -1,16 +1,20 @@
 #include "app_common.h"
 #include "FreeRTOS_IP.h"
 #include "FreeRTOS_Sockets.h"
+#include "app_queue.h"
 
 /* definitions */
-#define BUF_SIZE 10
+#define BUF_SIZE 1000
+#define TARGET_SERVER_PORT 7150
+
 /* functions */
 void vTCPSend(char *pcBufferToTransmit, const size_t xTotalLengthToSend);
 
 /* vaiables */
-static const char *msg = "aiueo";
-static uint8_t buf[BUF_SIZE];
+
+static char buf[BUF_SIZE];
 TaskHandle_t client_handle;
+
 
 static inline int snlen(const char *s, int maxlen)
 {
@@ -24,14 +28,23 @@ static inline int snlen(const char *s, int maxlen)
 void client_task(void *param)
 {
     (void)param;
-    size_t len;
+    queue_t *queue;
     d("");
 
-    len = snlen(msg, BUF_SIZE - 1);
-    memcpy(buf, msg, len + 1);
-    // vTCPSend((char *)buf, len);
+    vTCPSend("test send", 9);
     for (;;)
+    {
+        // queue pop
+        queue = dequeue();
+        if (queue && *queue->data)
+        {
+            d("queue exists");
+            sprintf(buf, "[FreeRTOS]: %s", queue->data);
+            vTCPSend(buf, strlen(buf));
+            vPortFree(queue);
+        }
         vTaskDelay(100);
+    }
 }
 
 void vTCPSend(char *pcBufferToTransmit, const size_t xTotalLengthToSend)
@@ -42,7 +55,7 @@ void vTCPSend(char *pcBufferToTransmit, const size_t xTotalLengthToSend)
     size_t xLenToSend;
 
     d("IN");
-    xRemoteAddress.sin_port = FreeRTOS_htons(10000);
+    xRemoteAddress.sin_port = FreeRTOS_htons(TARGET_SERVER_PORT);
     xRemoteAddress.sin_addr = FreeRTOS_inet_addr_quick(192, 168, 100, 1);
 
     /* Create a socket. */

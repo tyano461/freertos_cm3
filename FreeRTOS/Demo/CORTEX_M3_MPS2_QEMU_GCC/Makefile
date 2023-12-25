@@ -95,6 +95,7 @@ SOURCE_FILES += $(TCP_DIR)/source/portable/NetworkInterface/virtether/NetworkInt
 SOURCE_FILES += main_tcp.c
 SOURCE_FILES += app_client.c
 SOURCE_FILES += app_server.c
+SOURCE_FILES += app_queue.c
 SOURCE_FILES += dlog.c
 
 OBJ_FILES := $(SOURCE_FILES:%.c=$(BUILD_DIR)/%.o)
