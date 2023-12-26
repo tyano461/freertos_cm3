@@ -2,6 +2,7 @@
 #include "FreeRTOS_IP.h"
 #include "FreeRTOS_Sockets.h"
 #include "task.h"
+#include "app_common.h"
 #include "app_queue.h"
 
 #define SERVER_PORT 7151
@@ -11,7 +12,7 @@
 #pragma GCC diagnostic ignored "-Wunused-function"
 
 /* functions */
-static void vCreateTCPServerSocket(void);
+static void server_receive_main(void);
 
 /* variables */
 TaskHandle_t server_handle;
@@ -23,20 +24,20 @@ void server_task(void *param)
     (void)param;
     d("");
 
-    vCreateTCPServerSocket();
+    server_receive_main();
     vTaskDelay(0);
     for (;;)
         ;
 }
 
-
-static void vCreateTCPServerSocket(void)
+static void server_receive_main(void)
 {
     struct freertos_sockaddr xClient, xBindAddress;
     Socket_t xListeningSocket, xConnectedSocket;
     socklen_t xSize = sizeof(xClient);
     static const TickType_t xReceiveTimeOut = portMAX_DELAY;
     const BaseType_t xBacklog = 20;
+    BaseType_t result;
     int ret;
     queue_t *queue;
 
@@ -55,11 +56,13 @@ static void vCreateTCPServerSocket(void)
     xBindAddress.sin_port = (uint16_t)SERVER_PORT;
     xBindAddress.sin_port = FreeRTOS_htons(xBindAddress.sin_port);
 
-    FreeRTOS_bind(xListeningSocket, &xBindAddress, sizeof(xBindAddress));
-    d("bind");
+    result = FreeRTOS_bind(xListeningSocket, &xBindAddress, sizeof(xBindAddress));
+    ERRRET(result < 0, "bind failed.%ld", result);
 
-    FreeRTOS_listen(xListeningSocket, xBacklog);
-    d("listen");
+    result = FreeRTOS_listen(xListeningSocket, xBacklog);
+    ERRRET(result < 0, "listen failed.%ld", result);
+
+    d("wait connection");
 
     for (;;)
     {
@@ -67,20 +70,25 @@ static void vCreateTCPServerSocket(void)
         d("accept");
         configASSERT(xConnectedSocket != FREERTOS_INVALID_SOCKET);
 
-
         ret = FreeRTOS_recv(xListeningSocket, rx_buf, RX_BUF_SIZE, 0);
-        if (ret < 0) continue;
-        if (ret == 0) {
+        if (ret < 0)
+            continue;
+        if (ret == 0)
+        {
             d("close");
-        } else {
+        }
+        else
+        {
             ret = FreeRTOS_send(xListeningSocket, rx_buf, ret, 0);
-            if (ret < 0) {
+            if (ret < 0)
+            {
                 d("response send failed.");
                 continue;
             }
 
             queue = pvPortMalloc(ret + sizeof(queue_t));
-            if (!queue) {
+            if (!queue)
+            {
                 d("malloc failed.");
                 continue;
             }
@@ -90,5 +98,7 @@ static void vCreateTCPServerSocket(void)
             enqueue(queue);
         }
     }
+error_return:
+    return;
 }
 #pragma GCC diagnostic pop

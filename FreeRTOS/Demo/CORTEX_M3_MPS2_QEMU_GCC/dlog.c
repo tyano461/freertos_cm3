@@ -1,6 +1,6 @@
 #include "dlog.h"
 
-#define BUF_SIZE 200
+#define BUF_SIZE 400
 #define d2c(d) \
     (d < 0xa) ? d + '0' : ((d < 0x10) ? d - 0xa + 'a' : '.')
 
@@ -12,7 +12,7 @@ static char buf[BUF_SIZE];
 char *b2s(const void *data, int maxlen)
 {
     int i;
-    int len = min(maxlen, (BUF_SIZE - 1) / 4);
+    int len = min(maxlen, (BUF_SIZE ) / 5);
     uint8_t *o = (uint8_t *)data;
     char *p = buf;
     char u, l;

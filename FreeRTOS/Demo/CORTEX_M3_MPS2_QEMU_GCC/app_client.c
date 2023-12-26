@@ -15,7 +15,6 @@ void vTCPSend(char *pcBufferToTransmit, const size_t xTotalLengthToSend);
 static char buf[BUF_SIZE];
 TaskHandle_t client_handle;
 
-
 static inline int snlen(const char *s, int maxlen)
 {
     int i = 0;
@@ -32,6 +31,7 @@ void client_task(void *param)
     d("");
 
     vTCPSend("test send", 9);
+    vTaskDelay(100);
     for (;;)
     {
         // queue pop
@@ -65,7 +65,8 @@ void vTCPSend(char *pcBufferToTransmit, const size_t xTotalLengthToSend)
     configASSERT(xSocket != FREERTOS_INVALID_SOCKET);
 
     d("socket");
-    if (FreeRTOS_connect(xSocket, &xRemoteAddress, sizeof(xRemoteAddress)) == 0)
+    xBytesSent = FreeRTOS_connect(xSocket, &xRemoteAddress, sizeof(xRemoteAddress));
+    if (xBytesSent == 0)
     {
         d("connected");
         while ((size_t)xAlreadyTransmitted < xTotalLengthToSend)
@@ -94,7 +95,7 @@ void vTCPSend(char *pcBufferToTransmit, const size_t xTotalLengthToSend)
     }
     else
     {
-        d("not connected");
+        d("not connected. %ld", xBytesSent);
     }
 
     /* Initiate graceful shutdown. */
